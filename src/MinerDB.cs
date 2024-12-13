@@ -11,13 +11,23 @@ namespace BitcoinInfoMiner
 
     public class MinerModel
     {
-      
-        public int id;
-        public string ip;
-        public string status;
-        public string type;
-        public int hashRateRT;
-        public int hashRateAverage;
+
+        public int id { get; set; }
+        public string ip { get; set; }
+        public string status { get; set; }
+        public string type { get; set; }
+        public decimal hashRateRT { get; set; }
+        public decimal hashRateAverage { get; set; }
+        public int temperature1 { get; set; }
+        public int temperature2 { get; set; }
+        public int temperature3 { get; set; }
+        public List<int> fanSpeeds { get; set; }
+        public int fanSpeed1 { get; set; }
+        public int fanSpeed2 { get; set; }
+        public int fanSpeed3 { get; set; }
+        public int fanSpeed4 { get; set; }
+
+
         public string temperatureString
         {
             get
@@ -25,18 +35,16 @@ namespace BitcoinInfoMiner
                 return this.temperature1.ToString() + "/" + this.temperature2.ToString() + "/" + this.temperature3.ToString();
             }
         }
-        public int temperature1;
-        public int temperature2;
-        public int temperature3;
+
         public string fanSpeedString
         {
-            get {
-                return  this.fanSpeed1.ToString() + "/" + this.fanSpeed2.ToString(); 
+            get
+            {
+                return this.fanSpeed1.ToString() + "/" + this.fanSpeed2.ToString() + "/" + this.fanSpeed3.ToString() + "/" + this.fanSpeed4.ToString();
             }
         }
+
         public bool selected;
-        public int fanSpeed1;
-        public int fanSpeed2;
         public string elapsed;
         public string pool1;
         public string pool2;
@@ -86,6 +94,8 @@ namespace BitcoinInfoMiner
             temperature3 = temper.Count() > 2 ? Convert.ToInt32(temper[2]) : 0;
             fanSpeed1 = fan.Count() > 0 ? Convert.ToInt32(fan[0]) : 0;
             fanSpeed2 = fan.Count() > 1 ? Convert.ToInt32(fan[1]) : 0;
+            fanSpeed3 = fan.Count() > 1 ? Convert.ToInt32(fan[2]) : 0;
+            fanSpeed4 = fan.Count() > 1 ? Convert.ToInt32(fan[3]) : 0;
 
             elapsed = Convert.ToString(row.Cells["Elapsed"].Value);
             pool1 = Convert.ToString(row.Cells["Pool1"].Value);
@@ -96,21 +106,17 @@ namespace BitcoinInfoMiner
             worker3 = Convert.ToString(row.Cells["Worker3"].Value);
             selected = row.Selected;
         }
-        public MinerModel(string ip,jsonMinerStatus minerStatus,jsonMinerNetworkStatus networkStatus, jsonMinerStatus minerAllStats, jsonMinerStatus summary)
+        public MinerModel(string ip,jsonMinerStatus minerPools,jsonMinerNetworkStatus networkStatus, jsonMinerStatuses minerAllStats, jsonMinerStatus summary)
         {
             this.ip=ip;
             try
             {
-                if (minerStatus != null) //  && minerStatus.devs!=null && minerStatus.devs.Count > 0
+                if (minerPools != null) //  && minerStatus.devs!=null && minerStatus.devs.Count > 0
                 {
-                    foreach (jsonDevsMember member in minerAllStats.stats)
-                    {
-                        member.parseFreq();
-                    }
                     this.type = "Antminer";
                     try
                     {
-                        this.hashRateRT = Convert.ToInt32(minerAllStats.stats.Sum(t => t.chain_rate), CultureInfo.InvariantCulture);
+                        this.hashRateRT = minerAllStats.stats.Count > 0 ? decimal.Parse(minerAllStats.stats[0].rate_5s) : 0 ;
                     }
                     catch
                     {
@@ -118,7 +124,7 @@ namespace BitcoinInfoMiner
                     }
                     try
                     {
-                        this.hashRateAverage = Convert.ToInt32(minerAllStats.stats.Sum(t => t.chain_rateideal), CultureInfo.InvariantCulture);
+                        this.hashRateAverage = minerAllStats.stats.Count > 0 ? decimal.Parse(minerAllStats.stats[0].rate_avg) : 0;
                     }
                     catch
                     {
@@ -128,9 +134,9 @@ namespace BitcoinInfoMiner
                     //this.temperatureString 
                     try
                     {
-                        this.temperature1 = Convert.ToInt32(minerAllStats.stats[0].temp);
-                        this.temperature2 = Convert.ToInt32(minerAllStats.stats[1].temp);
-                        this.temperature3 = Convert.ToInt32(minerAllStats.stats[2].temp);
+                        this.temperature1 = minerAllStats.stats.Count > 0 ? Convert.ToInt32(minerAllStats.stats[0].chain[0].temp_chip[0], CultureInfo.InvariantCulture) : 0;
+                        this.temperature2 = minerAllStats.stats.Count > 0 ? Convert.ToInt32(minerAllStats.stats[0].chain[1].temp_chip[1], CultureInfo.InvariantCulture) : 0;
+                        this.temperature3 = minerAllStats.stats.Count > 0 ? Convert.ToInt32(minerAllStats.stats[0].chain[2].temp_chip[2], CultureInfo.InvariantCulture) : 0;
                     }
                     catch
                     {
@@ -140,24 +146,36 @@ namespace BitcoinInfoMiner
                     }
                     try
                     {
-                        this.fanSpeed1 = minerStatus.stats[0].fanSpeedList[0].speed;
-                        this.fanSpeed2 = minerStatus.stats[0].fanSpeedList[0].speed;
+                        this.fanSpeed1 = minerAllStats.stats.Count > 0 && minerAllStats.stats[0].fan.Count > 0
+                            ? Convert.ToInt32(minerAllStats.stats[0].fan[0], CultureInfo.InvariantCulture)
+                            : 0;
+                        this.fanSpeed2 = minerAllStats.stats.Count > 0 && minerAllStats.stats[0].fan.Count > 1
+                            ? Convert.ToInt32(minerAllStats.stats[0].fan[1], CultureInfo.InvariantCulture)
+                            : 0;
+                        this.fanSpeed3 = minerAllStats.stats.Count > 0 && minerAllStats.stats[0].fan.Count > 0
+                            ? Convert.ToInt32(minerAllStats.stats[0].fan[2], CultureInfo.InvariantCulture)
+                            : 0;
+                        this.fanSpeed4 = minerAllStats.stats.Count > 0 && minerAllStats.stats[0].fan.Count > 1
+                            ? Convert.ToInt32(minerAllStats.stats[0].fan[3], CultureInfo.InvariantCulture)
+                            : 0;
                     }
                     catch
                     {
                         this.fanSpeed1 = 0;
                         this.fanSpeed2 = 0;
+                        this.fanSpeed3 = 0;
+                        this.fanSpeed4 = 0;
                     }
 
                     try
                     {
-                        this.type = minerStatus.info.type;
-                        this.pool1 = minerStatus.pools[0].url;
-                        this.pool2 = minerStatus.pools[1].url;
-                        this.pool3 = minerStatus.pools[2].url;
-                        this.worker1 = minerStatus.pools[0].user;
-                        this.worker2 = minerStatus.pools[1].user;
-                        this.worker3 = minerStatus.pools[2].user;
+                        this.type = minerPools.info.type;
+                        this.pool1 = minerPools.pools[0].url;
+                        this.pool2 = minerPools.pools[1].url;
+                        this.pool3 = minerPools.pools[2].url;
+                        this.worker1 = minerPools.pools[0].user;
+                        this.worker2 = minerPools.pools[1].user;
+                        this.worker3 = minerPools.pools[2].user;
                         this.elapsed = TimeSpan.FromSeconds(Convert.ToInt64(summary.summary[0]["elapsed"])).ToString(@"dd\:hh\:mm\:ss");
                     }
                     catch (Exception ex)
@@ -224,8 +242,7 @@ namespace BitcoinInfoMiner
             temperature1 = 0;
             temperature2 = 0;
             temperature3 = 0;
-            fanSpeed1 = 0;
-            fanSpeed2 = 0;
+            fanSpeeds.Add(0);
             elapsed = "";
             pool1 = "";
             worker1 = "";

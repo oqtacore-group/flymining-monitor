@@ -8,12 +8,37 @@ using System.Threading.Tasks;
 
 namespace BitcoinInfoMiner
 {
+    public class Stats
+    {
+        public string rate_5s { get; set; }
+        public string rate_ideal { get; set; }
+        public string rate_avg { get; set; }
+        public List<string> fan { get; set; }
+        public List<Chain> chain { get; set; }
+
+    }
+
+    public class Chain
+    {
+        public string rate_real { get; set; }
+        public string asic_num { get; set; } // Number of Chips
+        public string sn { get; set; } // serial number
+        public List<string> temp_chip { get; set; } // temp of chips
+        public List<string> temp_pcb { get; set; } // temp of board
+        public List<string> temp_pic { get; set; } // temp of controllers
+    }
+
+    public class jsonMinerStatuses
+    {
+        public List<Stats> stats { get; set; }
+    }
+
     public interface IAsicReader
     {
         Task <string> getAsicModelIfSupported(string ip);
-        Task<jsonMinerStatus> getStatusData(string ip);
+        Task<jsonMinerStatus> getPoolsData(string ip);
         Task<jsonMinerNetworkStatus> getNetworkData(string ip);
-        Task<jsonMinerStatus> getStatsData(string ip);
+        Task<jsonMinerStatuses> getStatsData(string ip);
         Task<jsonMinerStatus> getSummaryData(string ip);
         List<string> supportedModels();
 
@@ -54,7 +79,6 @@ namespace BitcoinInfoMiner
 
     public class AntminerAsicReader : IAsicReader
     {
-        private static string kernelPath = "/cgi-bin/get_kernel_log.cgi";
         private static string poolsPath = "/cgi-bin/pools.cgi";
         private static string statsPath = "/cgi-bin/stats.cgi";
         private static string summaryPath = "/cgi-bin/summary.cgi";
@@ -77,7 +101,7 @@ namespace BitcoinInfoMiner
             if (response.IsSuccessStatusCode)
             {
 
-                return "Antminer S21";
+                return "Antminer";
             }
 
             return null;
@@ -115,7 +139,7 @@ namespace BitcoinInfoMiner
             }
         }
 
-        public async Task<jsonMinerStatus> getStatsData(string ip)
+        public async Task<jsonMinerStatuses> getStatsData(string ip)
         {
             try
             {
@@ -127,7 +151,7 @@ namespace BitcoinInfoMiner
                 var byteArray = Encoding.ASCII.GetBytes(WebCalls.minerLogin + ":" + WebCalls.minerPass);
                 var response = await client.GetAsync(url).ConfigureAwait(false);
                 string text = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                jsonMinerStatus result = JsonConvert.DeserializeObject<jsonMinerStatus>(text);
+                jsonMinerStatuses result = JsonConvert.DeserializeObject<jsonMinerStatuses>(text);
 
                 return result;
             }
@@ -147,7 +171,7 @@ namespace BitcoinInfoMiner
             }
         }
 
-        public async Task<jsonMinerStatus> getStatusData(string ip)
+        public async Task<jsonMinerStatus> getPoolsData(string ip)
         {
             try
             {
@@ -216,7 +240,7 @@ namespace BitcoinInfoMiner
         public List<string> supportedModels()
         {
             var list = new List<string>();
-            list.Add("Antminer S21");
+            list.Add("Antminer");
 
             return list;
         }
@@ -228,15 +252,15 @@ namespace BitcoinInfoMiner
         Dictionary <string, IAsicReader> modelReaders = new Dictionary<string, IAsicReader>();
    
 
-        public async Task<jsonMinerStatus> getStatusData(string ip, string model)
+        public async Task<jsonMinerStatus> getPoolsData(string ip, string model)
         {
-            return await modelReaders[model].getStatusData(ip);
+            return await modelReaders[model].getPoolsData(ip);
         }
         public async Task<jsonMinerNetworkStatus> getNetworkData(string ip, string model)
         {
             return await modelReaders[model].getNetworkData(ip);
         }
-        public async Task<jsonMinerStatus> getStatsData(string ip, string model)
+        public async Task<jsonMinerStatuses> getStatsData(string ip, string model)
         {
             return await modelReaders[model].getStatsData(ip);
         }
@@ -252,7 +276,7 @@ namespace BitcoinInfoMiner
             asicReaders = new List<IAsicReader>();
             //asicReaders.Add(new AvalonAsicReader());
             asicReaders.Add(antminerReader);
-            modelReaders.Add("Antminer S21", antminerReader);
+            modelReaders.Add("Antminer", antminerReader);
         }
         public static AsicReaderManager Instance() 
         { 

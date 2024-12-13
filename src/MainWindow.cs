@@ -1279,7 +1279,7 @@ namespace BitcoinInfoMiner
             Log.logArchive();
             if (Settings.logged)
             {
-                int hashrate = 0;
+                decimal hashrate = 0;
                 foreach (MinerModel model in Sql.minersList)
                 {
                     if (model.hashRateRT > 0)
@@ -1418,11 +1418,11 @@ namespace BitcoinInfoMiner
                 var model = await AsicReaderManager.Instance().getAsicModel(ip);
                 jsonMinerStatus pools = null;
                 jsonMinerNetworkStatus netStatus = null;
-                jsonMinerStatus minerAllStats = null;
+                jsonMinerStatuses minerAllStats = null;
                 jsonMinerStatus summaryStatus = null;
                 while (pools == null && iter < 3)
                 {
-                    pools = await AsicReaderManager.Instance().getStatusData(ip, model);
+                    pools = await AsicReaderManager.Instance().getPoolsData(ip, model);
                     netStatus = await AsicReaderManager.Instance().getNetworkData(ip, model);
                     minerAllStats = await AsicReaderManager.Instance().getStatsData(ip, model);
                     summaryStatus = await AsicReaderManager.Instance().getSummaryData(ip, model);
