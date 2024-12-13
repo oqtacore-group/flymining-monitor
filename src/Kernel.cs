@@ -322,7 +322,7 @@ namespace BitcoinInfoMiner
             try
             {
                //status = await Kernel.getStatusDataText("E://testingParsing.txt");
-                status = await Kernel.getStatusData(this.Ip);
+                //status = await Kernel.getStatusData(this.Ip);
                
             }
             catch (Exception ex)
@@ -422,7 +422,7 @@ namespace BitcoinInfoMiner
             string unparsedText = "";
             try
             {
-                unparsedText = await Kernel.getKernelData(this.Ip);
+                //unparsedText = await Kernel.getKernelData(this.Ip);
                 //unparsedText = await Kernel.getKernelDataText("E://testKernel.txt");
             }
             catch (Exception ex)
@@ -872,14 +872,6 @@ namespace BitcoinInfoMiner
     static class Kernel
     {
         /// <summary>
-        /// Path to kernel log
-        /// </summary>
-        private static string kernelPath = "/cgi-bin/get_kernel_log.cgi";
-        private static string poolsPath = "/cgi-bin/pools.cgi";
-        private static string statsPath = "/cgi-bin/stats.cgi";
-        private static string summaryPath = "/cgi-bin/summary.cgi";
-        private static string networkPath = "/cgi-bin/get_network_info.cgi";
-        /// <summary>
         /// Http client for kernel access
         /// </summary>
         private static HttpClient client = new HttpClient();
@@ -891,37 +883,37 @@ namespace BitcoinInfoMiner
         /// </summary>
         /// <param name="ip"></param>
         /// <returns></returns>
-        public static async Task<jsonMinerNetworkStatus> getNetworkData(string ip)
-        {
-            try
-            {
-                var url = "http://" + WebCalls.minerLogin + ":" + WebCalls.minerPass + "@" + ip + networkPath;
-                HttpClientHandler handler = new HttpClientHandler();
-                handler.Credentials = new System.Net.NetworkCredential(WebCalls.minerLogin, WebCalls.minerPass);
-                client = new HttpClient(handler);
-                client.Timeout = new TimeSpan(0, 0,10);
-                var byteArray = Encoding.ASCII.GetBytes(WebCalls.minerLogin + ":" + WebCalls.minerPass);
-                var response = await client.GetAsync(url).ConfigureAwait(false);
-                string text = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                jsonMinerNetworkStatus result = JsonConvert.DeserializeObject<jsonMinerNetworkStatus>(text);
+        //public static async Task<jsonMinerNetworkStatus> getNetworkData(string ip)
+        //{
+        //    try
+        //    {
+        //        var url = "http://" + WebCalls.minerLogin + ":" + WebCalls.minerPass + "@" + ip + networkPath;
+        //        HttpClientHandler handler = new HttpClientHandler();
+        //        handler.Credentials = new System.Net.NetworkCredential(WebCalls.minerLogin, WebCalls.minerPass);
+        //        client = new HttpClient(handler);
+        //        client.Timeout = new TimeSpan(0, 0,10);
+        //        var byteArray = Encoding.ASCII.GetBytes(WebCalls.minerLogin + ":" + WebCalls.minerPass);
+        //        var response = await client.GetAsync(url).ConfigureAwait(false);
+        //        string text = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        //        jsonMinerNetworkStatus result = JsonConvert.DeserializeObject<jsonMinerNetworkStatus>(text);
 
-                return result;
-            }
-            catch (System.Net.Http.HttpRequestException ex)
-            {
+        //        return result;
+        //    }
+        //    catch (System.Net.Http.HttpRequestException ex)
+        //    {
                
-                return null;
-            }
-            catch (System.Threading.Tasks.TaskCanceledException)
-            {
-                return null;
-            }
-            catch (Exception ex)
-            {
-                Log.logDebug("getNetworkData" + Convert.ToString(ex));
-                return null;
-            }
-        }
+        //        return null;
+        //    }
+        //    catch (System.Threading.Tasks.TaskCanceledException)
+        //    {
+        //        return null;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Log.logDebug("getNetworkData" + Convert.ToString(ex));
+        //        return null;
+        //    }
+        //}
 
 
         /// <summary>
@@ -929,138 +921,138 @@ namespace BitcoinInfoMiner
         /// </summary>
         /// <param name="ip"></param>
         /// <returns></returns>
-        public static async Task<string> getKernelData(string ip)
-        {
-            try
-            {
-                var url = "http://" + WebCalls.minerLogin + ":" + WebCalls.minerPass + "@" + ip + kernelPath;
-                HttpClientHandler handler = new HttpClientHandler();
-                handler.Credentials = new System.Net.NetworkCredential(WebCalls.minerLogin, WebCalls.minerPass);
-                client = new HttpClient(handler);
-                client.Timeout = new TimeSpan(0, 0, 10);
-                var byteArray = Encoding.ASCII.GetBytes(WebCalls.minerLogin + ":" + WebCalls.minerPass);
-                var response = await client.GetAsync(url).ConfigureAwait(false);
-                return await response.Content.ReadAsStringAsync().ConfigureAwait(false); ;
-            }
-            catch (System.Net.Http.HttpRequestException)
-            {
+        //public static async Task<string> getKernelData(string ip)
+        //{
+        //    try
+        //    {
+        //        var url = "http://" + WebCalls.minerLogin + ":" + WebCalls.minerPass + "@" + ip + kernelPath;
+        //        HttpClientHandler handler = new HttpClientHandler();
+        //        handler.Credentials = new System.Net.NetworkCredential(WebCalls.minerLogin, WebCalls.minerPass);
+        //        client = new HttpClient(handler);
+        //        client.Timeout = new TimeSpan(0, 0, 10);
+        //        var byteArray = Encoding.ASCII.GetBytes(WebCalls.minerLogin + ":" + WebCalls.minerPass);
+        //        var response = await client.GetAsync(url).ConfigureAwait(false);
+        //        return await response.Content.ReadAsStringAsync().ConfigureAwait(false); ;
+        //    }
+        //    catch (System.Net.Http.HttpRequestException)
+        //    {
 
-                return "";
-            }
-        }
+        //        return "";
+        //    }
+        //}
 
         /// <summary>
         /// Get status data 
         /// </summary>
         /// <param name="ip">Asic ip</param>
         /// <returns>returns Deserialized json object</returns>
-        public static async Task<jsonMinerStatus> getStatusData(string ip)
-        {
-            try
-            {
-                var url = "http://" + WebCalls.minerLogin + ":" + WebCalls.minerPass + "@" + ip + poolsPath;
-                HttpClientHandler handler = new HttpClientHandler();
-                handler.Credentials = new System.Net.NetworkCredential(WebCalls.minerLogin, WebCalls.minerPass);
-                client = new HttpClient(handler);
-                client.Timeout = new TimeSpan(0, 0,10);
-                var byteArray = Encoding.ASCII.GetBytes(WebCalls.minerLogin + ":" + WebCalls.minerPass);
-                var response = await client.GetAsync(url).ConfigureAwait(false);
-                string text = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                jsonMinerStatus result = JsonConvert.DeserializeObject<jsonMinerStatus>(text);
+        //public static async Task<jsonMinerStatus> getStatusData(string ip)
+        //{
+        //    try
+        //    {
+        //        var url = "http://" + WebCalls.minerLogin + ":" + WebCalls.minerPass + "@" + ip + poolsPath;
+        //        HttpClientHandler handler = new HttpClientHandler();
+        //        handler.Credentials = new System.Net.NetworkCredential(WebCalls.minerLogin, WebCalls.minerPass);
+        //        client = new HttpClient(handler);
+        //        client.Timeout = new TimeSpan(0, 0,10);
+        //        var byteArray = Encoding.ASCII.GetBytes(WebCalls.minerLogin + ":" + WebCalls.minerPass);
+        //        var response = await client.GetAsync(url).ConfigureAwait(false);
+        //        string text = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        //        jsonMinerStatus result = JsonConvert.DeserializeObject<jsonMinerStatus>(text);
 
-                return result;
-            }
-            catch (System.Net.Http.HttpRequestException ex)
-            {
+        //        return result;
+        //    }
+        //    catch (System.Net.Http.HttpRequestException ex)
+        //    {
 
-                return null;
-            }
-            catch (System.Threading.Tasks.TaskCanceledException)
-            {
-                return null;
-            }
-            catch(Exception ex)
-            {
-                Log.logDebug("getStatusData" + Convert.ToString(ex));
-                return null;
-            }
-        }
+        //        return null;
+        //    }
+        //    catch (System.Threading.Tasks.TaskCanceledException)
+        //    {
+        //        return null;
+        //    }
+        //    catch(Exception ex)
+        //    {
+        //        Log.logDebug("getStatusData" + Convert.ToString(ex));
+        //        return null;
+        //    }
+        //}
 
         /// <summary>
         /// Get stats data 
         /// </summary>
         /// <param name="ip">Asic ip</param>
         /// <returns>returns Deserialized json object</returns>
-        public static async Task<jsonMinerStatus> getStatsData(string ip)
-        {
-            try
-            {
-                var url = "http://" + WebCalls.minerLogin + ":" + WebCalls.minerPass + "@" + ip + statsPath;
-                HttpClientHandler handler = new HttpClientHandler();
-                handler.Credentials = new System.Net.NetworkCredential(WebCalls.minerLogin, WebCalls.minerPass);
-                client = new HttpClient(handler);
-                client.Timeout = new TimeSpan(0, 0, 10);
-                var byteArray = Encoding.ASCII.GetBytes(WebCalls.minerLogin + ":" + WebCalls.minerPass);
-                var response = await client.GetAsync(url).ConfigureAwait(false);
-                string text = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                jsonMinerStatus result = JsonConvert.DeserializeObject<jsonMinerStatus>(text);
+        //public static async Task<jsonMinerStatus> getStatsData(string ip)
+        //{
+        //    try
+        //    {
+        //        var url = "http://" + WebCalls.minerLogin + ":" + WebCalls.minerPass + "@" + ip + statsPath;
+        //        HttpClientHandler handler = new HttpClientHandler();
+        //        handler.Credentials = new System.Net.NetworkCredential(WebCalls.minerLogin, WebCalls.minerPass);
+        //        client = new HttpClient(handler);
+        //        client.Timeout = new TimeSpan(0, 0, 10);
+        //        var byteArray = Encoding.ASCII.GetBytes(WebCalls.minerLogin + ":" + WebCalls.minerPass);
+        //        var response = await client.GetAsync(url).ConfigureAwait(false);
+        //        string text = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        //        jsonMinerStatus result = JsonConvert.DeserializeObject<jsonMinerStatus>(text);
 
-                return result;
-            }
-            catch (System.Net.Http.HttpRequestException ex)
-            {
+        //        return result;
+        //    }
+        //    catch (System.Net.Http.HttpRequestException ex)
+        //    {
 
-                return null;
-            }
-            catch (System.Threading.Tasks.TaskCanceledException)
-            {
-                return null;
-            }
-            catch (Exception ex)
-            {
-                Log.logDebug("getStatsyData" + Convert.ToString(ex));
-                return null;
-            }
-        }
+        //        return null;
+        //    }
+        //    catch (System.Threading.Tasks.TaskCanceledException)
+        //    {
+        //        return null;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Log.logDebug("getStatsyData" + Convert.ToString(ex));
+        //        return null;
+        //    }
+        //}
 
         /// <summary>
         /// Get summary data 
         /// </summary>
         /// <param name="ip">Asic ip</param>
         /// <returns>returns Deserialized json object</returns>
-        public static async Task<jsonMinerStatus> getSummaryData(string ip)
-        {
-            try
-            {
-                var url = "http://" + WebCalls.minerLogin + ":" + WebCalls.minerPass + "@" + ip + summaryPath;
-                HttpClientHandler handler = new HttpClientHandler();
-                handler.Credentials = new System.Net.NetworkCredential(WebCalls.minerLogin, WebCalls.minerPass);
-                using HttpClient client = new HttpClient(handler)
-                {
-                    Timeout = new TimeSpan(0, 0, 10)
-                };
-                var byteArray = Encoding.ASCII.GetBytes($"{WebCalls.minerLogin}:{WebCalls.minerPass}");
-                var response = await client.GetAsync(url).ConfigureAwait(false);
-                string text = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                jsonMinerStatus result = JsonConvert.DeserializeObject<jsonMinerStatus>(text);
+        //public static async Task<jsonMinerStatus> getSummaryData(string ip)
+        //{
+        //    try
+        //    {
+        //        var url = "http://" + WebCalls.minerLogin + ":" + WebCalls.minerPass + "@" + ip + summaryPath;
+        //        HttpClientHandler handler = new HttpClientHandler();
+        //        handler.Credentials = new System.Net.NetworkCredential(WebCalls.minerLogin, WebCalls.minerPass);
+        //        using HttpClient client = new HttpClient(handler)
+        //        {
+        //            Timeout = new TimeSpan(0, 0, 10)
+        //        };
+        //        var byteArray = Encoding.ASCII.GetBytes($"{WebCalls.minerLogin}:{WebCalls.minerPass}");
+        //        var response = await client.GetAsync(url).ConfigureAwait(false);
+        //        string text = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        //        jsonMinerStatus result = JsonConvert.DeserializeObject<jsonMinerStatus>(text);
                 
-                return result;
-            }
-            catch (System.Net.Http.HttpRequestException ex)
-            {
+        //        return result;
+        //    }
+        //    catch (System.Net.Http.HttpRequestException ex)
+        //    {
 
-                return null;
-            }
-            catch (System.Threading.Tasks.TaskCanceledException)
-            {
-                return null;
-            }
-            catch (Exception ex)
-            {
-                Log.logDebug("getSummaryData" + Convert.ToString(ex));
-                return null;
-            }
-        }
+        //        return null;
+        //    }
+        //    catch (System.Threading.Tasks.TaskCanceledException)
+        //    {
+        //        return null;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Log.logDebug("getSummaryData" + Convert.ToString(ex));
+        //        return null;
+        //    }
+        //}
 
 
         /// <summary>

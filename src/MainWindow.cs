@@ -1415,16 +1415,17 @@ namespace BitcoinInfoMiner
             try
             {
                 int iter = 1;
+                var model = await AsicReaderManager.Instance().getAsicModel(ip);
                 jsonMinerStatus pools = null;
                 jsonMinerNetworkStatus netStatus = null;
                 jsonMinerStatus minerAllStats = null;
                 jsonMinerStatus summaryStatus = null;
                 while (pools == null && iter < 3)
                 {
-                    pools = await Kernel.getStatusData(ip);
-                    netStatus = await Kernel.getNetworkData(ip);
-                    minerAllStats = await Kernel.getStatsData(ip);
-                    summaryStatus = await Kernel.getSummaryData(ip);
+                    pools = await AsicReaderManager.Instance().getStatusData(ip, model);
+                    netStatus = await AsicReaderManager.Instance().getNetworkData(ip, model);
+                    minerAllStats = await AsicReaderManager.Instance().getStatsData(ip, model);
+                    summaryStatus = await AsicReaderManager.Instance().getSummaryData(ip, model);
                     iter++;
                 }
                 MinerModel minerModel = new MinerModel(ip, pools, netStatus, minerAllStats, summaryStatus);
