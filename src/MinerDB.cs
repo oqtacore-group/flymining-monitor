@@ -134,9 +134,9 @@ namespace BitcoinInfoMiner
                     //this.temperatureString 
                     try
                     {
-                        this.temperature1 = minerAllStats.stats.Count > 0 ? Convert.ToInt32(minerAllStats.stats[0].chain[0].temp_chip[0], CultureInfo.InvariantCulture) : 0;
-                        this.temperature2 = minerAllStats.stats.Count > 0 ? Convert.ToInt32(minerAllStats.stats[0].chain[1].temp_chip[1], CultureInfo.InvariantCulture) : 0;
-                        this.temperature3 = minerAllStats.stats.Count > 0 ? Convert.ToInt32(minerAllStats.stats[0].chain[2].temp_chip[2], CultureInfo.InvariantCulture) : 0;
+                        this.temperature1 = minerAllStats.stats.Count > 0 ? Convert.ToInt32(minerAllStats.stats[0].chain[0].temp_chip.Last(), CultureInfo.InvariantCulture) : 0;
+                        this.temperature2 = minerAllStats.stats.Count > 0 ? Convert.ToInt32(minerAllStats.stats[0].chain[1].temp_chip.Last(), CultureInfo.InvariantCulture) : 0;
+                        this.temperature3 = minerAllStats.stats.Count > 0 ? Convert.ToInt32(minerAllStats.stats[0].chain[2].temp_chip.Last(), CultureInfo.InvariantCulture) : 0;
                     }
                     catch
                     {
