@@ -69,7 +69,7 @@ namespace BitcoinInfoMiner
             //LAN:192.168.1.101-192.168.1.220
             string[] parse = ipRange.Split(new char[] { ':', '-' }, StringSplitOptions.None);
             //Проверка парсинга
-            if (parse.Length != 3 || !parse[1].Contains("192.168.") || !parse[2].Contains("192.168.") || parse[1] == "192.168.1.1" || parse[2] == "192.168.1.1")
+            if (parse.Length != 3)
                 return false;
             string[] parseIP = parse[1].Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
             //Проверка,чтобы каждое число было меьше 1000, было числом без ошибочных знаков и чтобы в конце не было 255||0

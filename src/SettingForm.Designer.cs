@@ -239,6 +239,7 @@
             this.label8.Size = new System.Drawing.Size(119, 15);
             this.label8.TabIndex = 20;
             this.label8.Text = "Miner Credentials";
+            this.label8.Click += new System.EventHandler(this.label8_Click);
             // 
             // label9
             // 
@@ -411,11 +412,13 @@
             // 
             this.label21.AutoSize = true;
             this.label21.Font = new System.Drawing.Font("Constantia", 9.75F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label21.ForeColor = System.Drawing.SystemColors.ControlText;
             this.label21.Location = new System.Drawing.Point(567, 133);
             this.label21.Name = "label21";
             this.label21.Size = new System.Drawing.Size(143, 15);
             this.label21.TabIndex = 37;
             this.label21.Text = "FlyMining Credentials";
+            this.label21.Click += new System.EventHandler(this.label21_Click);
             // 
             // label22
             // 
@@ -580,7 +583,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(907, 497);
+            this.ClientSize = new System.Drawing.Size(893, 512);
             this.Controls.Add(this.LoginInfoLabel);
             this.Controls.Add(this.buttonLogin);
             this.Controls.Add(this.label29);
@@ -637,7 +640,7 @@
             this.Font = new System.Drawing.Font("Constantia", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.MinimumSize = new System.Drawing.Size(828, 472);
             this.Name = "SettingForm";
-            this.Text = "Settings";
+            this.Text = "FlyMining Settings";
             this.TopMost = true;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SettingForm_FormClosing);
             this.Load += new System.EventHandler(this.SettingForm_Load);

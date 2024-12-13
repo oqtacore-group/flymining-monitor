@@ -8,7 +8,7 @@ using System.Net.Http;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web.Script.Serialization;
+using System.Text.Json;
 
 namespace BitcoinInfoMiner
 {
@@ -37,14 +37,14 @@ namespace BitcoinInfoMiner
                 writer.AutoFlush = true;
                 string json = "";
                 if (arg != "")
-                    json = new JavaScriptSerializer().Serialize(new
+                    json = JsonSerializer.Serialize(new
                     {
                         command = command,
                         parameter = arg
                     });
                 else
                 {
-                    json = new JavaScriptSerializer().Serialize(new
+                    json = JsonSerializer.Serialize(new
                     {
                         command = command
                     });
@@ -77,14 +77,14 @@ namespace BitcoinInfoMiner
                 {
                     string json = "";
                     if (arg != "")
-                        json = new JavaScriptSerializer().Serialize(new
+                        json = JsonSerializer.Serialize(new
                         {
                             command = command,
                             parameter = arg
                         });
                     else
                     {
-                        json = new JavaScriptSerializer().Serialize(new
+                        json = JsonSerializer.Serialize(new
                         {
                             command = command
                         });
@@ -140,14 +140,14 @@ namespace BitcoinInfoMiner
 
                 string json = "";
                 if (arg != "")
-                    json = new JavaScriptSerializer().Serialize(new
+                    json = JsonSerializer.Serialize(new
                     {
                         command = command,
                         parameter = arg
                     });
                 else
                 {
-                    json = new JavaScriptSerializer().Serialize(new
+                    json = JsonSerializer.Serialize(new
                     {
                         command = command
                     });

@@ -61,11 +61,11 @@
             this.labelMinerNumber = new System.Windows.Forms.Label();
             this.button8 = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.buttonSaveMinerState = new System.Windows.Forms.Button();
+            this.buttonLoadMinerState = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.buttonTableSite = new System.Windows.Forms.Button();
-            this.buttonLoadMinerState = new System.Windows.Forms.Button();
-            this.buttonSaveMinerState = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -416,6 +416,7 @@
             this.label2.Size = new System.Drawing.Size(89, 15);
             this.label2.TabIndex = 69;
             this.label2.Text = "Miner Status:";
+            this.label2.Click += new System.EventHandler(this.label2_Click);
             // 
             // labelMinerNumber
             // 
@@ -457,6 +458,26 @@
             this.groupBox2.Text = "Tools";
             this.groupBox2.Visible = false;
             // 
+            // buttonSaveMinerState
+            // 
+            this.buttonSaveMinerState.Location = new System.Drawing.Point(553, 19);
+            this.buttonSaveMinerState.Name = "buttonSaveMinerState";
+            this.buttonSaveMinerState.Size = new System.Drawing.Size(84, 44);
+            this.buttonSaveMinerState.TabIndex = 72;
+            this.buttonSaveMinerState.Text = "Save miner state";
+            this.buttonSaveMinerState.UseVisualStyleBackColor = true;
+            this.buttonSaveMinerState.Click += new System.EventHandler(this.buttonSaveMinerState_Click);
+            // 
+            // buttonLoadMinerState
+            // 
+            this.buttonLoadMinerState.Location = new System.Drawing.Point(643, 20);
+            this.buttonLoadMinerState.Name = "buttonLoadMinerState";
+            this.buttonLoadMinerState.Size = new System.Drawing.Size(84, 44);
+            this.buttonLoadMinerState.TabIndex = 71;
+            this.buttonLoadMinerState.Text = "Load Miner State";
+            this.buttonLoadMinerState.UseVisualStyleBackColor = true;
+            this.buttonLoadMinerState.Click += new System.EventHandler(this.buttonLoadMinerState_Click);
+            // 
             // button5
             // 
             this.button5.Location = new System.Drawing.Point(283, 19);
@@ -488,26 +509,6 @@
             this.buttonTableSite.UseVisualStyleBackColor = true;
             this.buttonTableSite.Click += new System.EventHandler(this.buttonTableSite_Click);
             // 
-            // buttonLoadMinerState
-            // 
-            this.buttonLoadMinerState.Location = new System.Drawing.Point(643, 20);
-            this.buttonLoadMinerState.Name = "buttonLoadMinerState";
-            this.buttonLoadMinerState.Size = new System.Drawing.Size(84, 44);
-            this.buttonLoadMinerState.TabIndex = 71;
-            this.buttonLoadMinerState.Text = "Load Miner State";
-            this.buttonLoadMinerState.UseVisualStyleBackColor = true;
-            this.buttonLoadMinerState.Click += new System.EventHandler(this.buttonLoadMinerState_Click);
-            // 
-            // buttonSaveMinerState
-            // 
-            this.buttonSaveMinerState.Location = new System.Drawing.Point(553, 19);
-            this.buttonSaveMinerState.Name = "buttonSaveMinerState";
-            this.buttonSaveMinerState.Size = new System.Drawing.Size(84, 44);
-            this.buttonSaveMinerState.TabIndex = 72;
-            this.buttonSaveMinerState.Text = "Save miner state";
-            this.buttonSaveMinerState.UseVisualStyleBackColor = true;
-            this.buttonSaveMinerState.Click += new System.EventHandler(this.buttonSaveMinerState_Click);
-            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -517,7 +518,7 @@
             this.Controls.Add(this.groupBox1);
             this.Font = new System.Drawing.Font("Constantia", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "MainWindow";
-            this.Text = "FlyMining";
+            this.Text = "FlyMining New";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.MainWindow_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();

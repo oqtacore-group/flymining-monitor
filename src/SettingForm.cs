@@ -363,6 +363,14 @@ namespace BitcoinInfoMiner
             isLogged(true);
         }
 
+        private void label21_Click(object sender, EventArgs e)
+        {
 
+        }
+
+        private void label8_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

@@ -96,21 +96,21 @@ namespace BitcoinInfoMiner
             worker3 = Convert.ToString(row.Cells["Worker3"].Value);
             selected = row.Selected;
         }
-        public MinerModel(string ip,jsonMinerStatus minerStatus,jsonMinerNetworkStatus networkStatus)
+        public MinerModel(string ip,jsonMinerStatus minerStatus,jsonMinerNetworkStatus networkStatus, jsonMinerStatus minerAllStats, jsonMinerStatus summary)
         {
             this.ip=ip;
             try
             {
-                if (minerStatus != null && minerStatus.devs!=null && minerStatus.devs.Count > 0)
+                if (minerStatus != null) //  && minerStatus.devs!=null && minerStatus.devs.Count > 0
                 {
-                    foreach (jsonDevsMember member in minerStatus.devs)
+                    foreach (jsonDevsMember member in minerAllStats.stats)
                     {
                         member.parseFreq();
                     }
-                    this.type = "Antminer S9";
+                    this.type = "Antminer";
                     try
                     {
-                        this.hashRateRT = Convert.ToInt32(minerStatus.devs.Sum(t => t.chain_rate), CultureInfo.InvariantCulture);
+                        this.hashRateRT = Convert.ToInt32(minerAllStats.stats.Sum(t => t.chain_rate), CultureInfo.InvariantCulture);
                     }
                     catch
                     {
@@ -118,7 +118,7 @@ namespace BitcoinInfoMiner
                     }
                     try
                     {
-                        this.hashRateAverage = Convert.ToInt32(minerStatus.devs.Sum(t => t.chain_rateideal), CultureInfo.InvariantCulture);
+                        this.hashRateAverage = Convert.ToInt32(minerAllStats.stats.Sum(t => t.chain_rateideal), CultureInfo.InvariantCulture);
                     }
                     catch
                     {
@@ -128,9 +128,9 @@ namespace BitcoinInfoMiner
                     //this.temperatureString 
                     try
                     {
-                        this.temperature1 = Convert.ToInt32(minerStatus.devs[0].temp);
-                        this.temperature2 = Convert.ToInt32(minerStatus.devs[1].temp);
-                        this.temperature3 = Convert.ToInt32(minerStatus.devs[2].temp);
+                        this.temperature1 = Convert.ToInt32(minerAllStats.stats[0].temp);
+                        this.temperature2 = Convert.ToInt32(minerAllStats.stats[1].temp);
+                        this.temperature3 = Convert.ToInt32(minerAllStats.stats[2].temp);
                     }
                     catch
                     {
@@ -140,8 +140,8 @@ namespace BitcoinInfoMiner
                     }
                     try
                     {
-                        this.fanSpeed1 = minerStatus.devs[0].fanSpeedList[0].speed;
-                        this.fanSpeed2 = minerStatus.devs[0].fanSpeedList[0].speed;
+                        this.fanSpeed1 = minerStatus.stats[0].fanSpeedList[0].speed;
+                        this.fanSpeed2 = minerStatus.stats[0].fanSpeedList[0].speed;
                     }
                     catch
                     {
@@ -151,14 +151,14 @@ namespace BitcoinInfoMiner
 
                     try
                     {
-
+                        this.type = minerStatus.info.type;
                         this.pool1 = minerStatus.pools[0].url;
                         this.pool2 = minerStatus.pools[1].url;
                         this.pool3 = minerStatus.pools[2].url;
                         this.worker1 = minerStatus.pools[0].user;
                         this.worker2 = minerStatus.pools[1].user;
                         this.worker3 = minerStatus.pools[2].user;
-                        this.elapsed = TimeSpan.FromSeconds(Convert.ToInt64(minerStatus.summary["elapsed"])).ToString(@"dd\:hh\:mm\:ss");
+                        this.elapsed = TimeSpan.FromSeconds(Convert.ToInt64(summary.summary[0]["elapsed"])).ToString(@"dd\:hh\:mm\:ss");
                     }
                     catch (Exception ex)
                     {

@@ -71,16 +71,22 @@ namespace BitcoinInfoMiner
     {
         public JToken summary { get; set; }
         public List<jsonMinerPoolStatus> pools { get; set; }
-        public List<jsonDevsMember> devs { get; set; }
+        public List<jsonDevsMember> stats { get; set; }
+        public InfoMiner info { get; set; }
     }
 
 
     public class jsonMinerPoolStatus
     {
        public int index {get;set;}
- public string url {get;set;}
-public string user {get;set;}
-public string status {get;set;}
+       public string url {get;set;}
+       public string user {get;set;}
+       public string status {get;set;}
+    }
+
+    public class InfoMiner
+    {
+        public string type { get; set; }
     }
 
 
@@ -101,23 +107,34 @@ public string status {get;set;}
             foreach (string row in parsedText)
             {
                 string[] parsedRow = row.Split(new char[] { '=' }, StringSplitOptions.RemoveEmptyEntries);
-                if (parsedRow != null && parsedRow.Count() > 1 && !result.Keys.Contains(parsedRow[0]))
+                if (parsedRow != null && parsedRow.Length > 1 && !result.ContainsKey(parsedRow[0]))
                     result.Add(parsedRow[0], parsedRow[1]);
             }
             return result;
         }
         public int index { get; set; }
-        public int chain_acn { get; set; }
+        public int chain_num { get; set; }
         public string freq { get; set; }
         public int temp { get; set; }
         public decimal freqReal { get; set; }
+        public Dictionary<string, string> parsedDict { get; set; }
+        public int fan_num { get; set; }
+        public List<fanInfo> fanSpeedList { get; set; }
+        public int temp_num { get; set; }
+        public List<int> fan_numbers { get; set; }
+        public decimal total_freqavg { get; set; }
+        public decimal total_acn { get; set; }
+        public decimal total_rate { get; set; }
+        public int chain_hw { get; set; }
+        public decimal chain_rate { get; set; }
+        public decimal chain_rateideal { get; set; }
+        public int chain_offside { get; set; }
+        public int chain_opencore { get; set; }
         /// <summary>
         /// Defacto initialization. There is a bug and freq property is big unparsed string.This parses it.
         /// </summary>
         public void parseFreq()
         {
-
-          
             try
             {
                 if (freq.Length == 0)
@@ -212,11 +229,11 @@ public string status {get;set;}
             }
             try
             {
-                if (parsedDict.Keys.Contains("chain_offside_" + this.index))
+                if (parsedDict.ContainsKey("chain_offside_" + this.index))
                 {
                     this.chain_offside = Convert.ToInt32(parsedDict["chain_offside_" + this.index], CultureInfo.InvariantCulture);
                 }
-                if (parsedDict.Keys.Contains("chain_opencore_" + this.index))
+                if (parsedDict.ContainsKey("chain_opencore_" + this.index))
                 {
                     this.chain_opencore = Convert.ToInt32(parsedDict["chain_opencore_" + this.index], CultureInfo.InvariantCulture);
                 }
@@ -227,21 +244,21 @@ public string status {get;set;}
             }
 
         }
-        public Dictionary<String, String> parsedDict { get; set; }
-        public int fan_num { get; set; }
-        public List<fanInfo> fanSpeedList { get; set; }
-        public int temp_num { get; set; }
-        public List<int> fan_numbers { get; set; }
-        public decimal total_freqavg { get; set; }
-        public decimal total_acn { get; set; }
-        public decimal total_rate { get; set; }
+        //public Dictionary<String, String> parsedDict { get; set; }
+        //public int fan_num { get; set; }
+        //public List<fanInfo> fanSpeedList { get; set; }
+        //public int temp_num { get; set; }
+        //public List<int> fan_numbers { get; set; }
+        //public decimal total_freqavg { get; set; }
+        //public decimal total_acn { get; set; }
+        //public decimal total_rate { get; set; }
 
-        public int chain_hw { get; set; }
-        public decimal chain_rate { get; set; }
-        public decimal chain_rateideal { get; set; }
+        //public int chain_hw { get; set; }
+        //public decimal chain_rate { get; set; }
+        //public decimal chain_rateideal { get; set; }
         
-        public int chain_offside { get; set; }
-        public int chain_opencore { get; set; }
+        //public int chain_offside { get; set; }
+        //public int chain_opencore { get; set; }
 
     }
 
@@ -319,15 +336,15 @@ public string status {get;set;}
 
 
                 
-                if (status.devs != null)
+                if (status.stats != null)
                 {
-                    foreach (jsonDevsMember member in status.devs)
+                    foreach (jsonDevsMember member in status.stats)
                     {
                         member.parseFreq();
                         hashBoardList.Add(new HashBoardState(member));
                     }
-                    if (status.devs.Count>0)
-                        this.getFanStatus(status.devs[0]);
+                    if (status.stats.Count>0)
+                        this.getFanStatus(status.stats[0]);
                     for (int iter=6;iter<9;iter++)
                     {
                         if (!hashBoardList.Any(t=>t.Id==iter))
@@ -789,7 +806,7 @@ public string status {get;set;}
             this.Id = member.index;
             this.temp =  member.temp;
             this.hashrate = Math.Round( member.chain_rate);
-            this.chips =  member.chain_acn;
+            this.chips =  member.chain_num;
             this.chain_offside = member.chain_offside;
             this.chain_opencore =  member.chain_opencore;
             this.freq =  member.freqReal;
@@ -858,7 +875,9 @@ public string status {get;set;}
         /// Path to kernel log
         /// </summary>
         private static string kernelPath = "/cgi-bin/get_kernel_log.cgi";
-        private static string statusPath = "/cgi-bin/get_miner_status.cgi";
+        private static string poolsPath = "/cgi-bin/pools.cgi";
+        private static string statsPath = "/cgi-bin/stats.cgi";
+        private static string summaryPath = "/cgi-bin/summary.cgi";
         private static string networkPath = "/cgi-bin/get_network_info.cgi";
         /// <summary>
         /// Http client for kernel access
@@ -939,7 +958,7 @@ public string status {get;set;}
         {
             try
             {
-                var url = "http://" + WebCalls.minerLogin + ":" + WebCalls.minerPass + "@" + ip + statusPath;
+                var url = "http://" + WebCalls.minerLogin + ":" + WebCalls.minerPass + "@" + ip + poolsPath;
                 HttpClientHandler handler = new HttpClientHandler();
                 handler.Credentials = new System.Net.NetworkCredential(WebCalls.minerLogin, WebCalls.minerPass);
                 client = new HttpClient(handler);
@@ -963,6 +982,82 @@ public string status {get;set;}
             catch(Exception ex)
             {
                 Log.logDebug("getStatusData" + Convert.ToString(ex));
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Get stats data 
+        /// </summary>
+        /// <param name="ip">Asic ip</param>
+        /// <returns>returns Deserialized json object</returns>
+        public static async Task<jsonMinerStatus> getStatsData(string ip)
+        {
+            try
+            {
+                var url = "http://" + WebCalls.minerLogin + ":" + WebCalls.minerPass + "@" + ip + statsPath;
+                HttpClientHandler handler = new HttpClientHandler();
+                handler.Credentials = new System.Net.NetworkCredential(WebCalls.minerLogin, WebCalls.minerPass);
+                client = new HttpClient(handler);
+                client.Timeout = new TimeSpan(0, 0, 10);
+                var byteArray = Encoding.ASCII.GetBytes(WebCalls.minerLogin + ":" + WebCalls.minerPass);
+                var response = await client.GetAsync(url).ConfigureAwait(false);
+                string text = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                jsonMinerStatus result = JsonConvert.DeserializeObject<jsonMinerStatus>(text);
+
+                return result;
+            }
+            catch (System.Net.Http.HttpRequestException ex)
+            {
+
+                return null;
+            }
+            catch (System.Threading.Tasks.TaskCanceledException)
+            {
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Log.logDebug("getStatsyData" + Convert.ToString(ex));
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Get summary data 
+        /// </summary>
+        /// <param name="ip">Asic ip</param>
+        /// <returns>returns Deserialized json object</returns>
+        public static async Task<jsonMinerStatus> getSummaryData(string ip)
+        {
+            try
+            {
+                var url = "http://" + WebCalls.minerLogin + ":" + WebCalls.minerPass + "@" + ip + summaryPath;
+                HttpClientHandler handler = new HttpClientHandler();
+                handler.Credentials = new System.Net.NetworkCredential(WebCalls.minerLogin, WebCalls.minerPass);
+                using HttpClient client = new HttpClient(handler)
+                {
+                    Timeout = new TimeSpan(0, 0, 10)
+                };
+                var byteArray = Encoding.ASCII.GetBytes($"{WebCalls.minerLogin}:{WebCalls.minerPass}");
+                var response = await client.GetAsync(url).ConfigureAwait(false);
+                string text = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                jsonMinerStatus result = JsonConvert.DeserializeObject<jsonMinerStatus>(text);
+                
+                return result;
+            }
+            catch (System.Net.Http.HttpRequestException ex)
+            {
+
+                return null;
+            }
+            catch (System.Threading.Tasks.TaskCanceledException)
+            {
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Log.logDebug("getSummaryData" + Convert.ToString(ex));
                 return null;
             }
         }

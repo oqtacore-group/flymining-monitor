@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Web;
 using System.Net;
-using System.Web.Script.Serialization;
 using System.IO;
 using System.Net.Sockets;
 using System.Threading;
@@ -25,6 +24,7 @@ using Newtonsoft.Json.Linq;
 using System.Collections.Concurrent;
 using System.Reflection;
 using System.Diagnostics;
+using static BitcoinInfoMiner.Settings;
 
 namespace BitcoinInfoMiner
 {
@@ -533,7 +533,7 @@ namespace BitcoinInfoMiner
                                    row["Temperature"] = minerModel.temperatureString;
                                    row["Fan Speed"] = minerModel.fanSpeedString;
                                    row["Elapsed"] = minerModel.elapsed;
-                                   this.Invoke(new MethodInvoker(delegate
+                                   this.Invoke(new System.Windows.Forms.MethodInvoker(delegate
                                          {
                                              progressBar1.PerformStep();
                                          }));
@@ -564,7 +564,7 @@ namespace BitcoinInfoMiner
                        {
                            mainTable.Rows.Remove(rowForDel[iter]);
                        }
-                       this.Invoke(new MethodInvoker(delegate
+                       this.Invoke(new System.Windows.Forms.MethodInvoker(delegate
                        {
                            editedTable.Rows.Clear();
                            foreach (DataRow dr in mainTable.Rows)
@@ -601,7 +601,7 @@ namespace BitcoinInfoMiner
                     selectCellsFill();
                     if (dataGridView1.Rows.Count > 0 && dataGridView1.FirstDisplayedCell != null)
                         saveRow = dataGridView1.FirstDisplayedCell.RowIndex;
-                    this.Invoke(new MethodInvoker(delegate
+                    this.Invoke(new System.Windows.Forms.MethodInvoker(delegate
                     {
 
                         dataGridView1.DataSource = null;
@@ -662,7 +662,7 @@ namespace BitcoinInfoMiner
                     {
 
                         //dataGridView1.ResumeLayout();
-                        this.Invoke(new MethodInvoker(delegate
+                        this.Invoke(new System.Windows.Forms.MethodInvoker(delegate
                         {
                             bs.ResumeBinding();
                             dataGridView1.DataSource = bs;
@@ -703,7 +703,7 @@ namespace BitcoinInfoMiner
             Settings.ipList = new List<string>();
             //dataGridView1.Rows.Clear();
             mainTable.Rows.Clear();
-            this.Invoke(new MethodInvoker(delegate
+            this.Invoke(new System.Windows.Forms.MethodInvoker(delegate
             {
                 editedTable.Rows.Clear();
                 foreach (DataRow dr in mainTable.Rows)
@@ -813,7 +813,7 @@ namespace BitcoinInfoMiner
                 }
             }
 
-            this.Invoke(new MethodInvoker(delegate
+            this.Invoke(new System.Windows.Forms.MethodInvoker(delegate
             {
                 editedTable.Rows.Clear();
                 foreach (DataRow dr in mainTable.Rows)
@@ -1158,12 +1158,12 @@ namespace BitcoinInfoMiner
                 {
                     if (dataGridView1.SortOrder == SortOrder.Descending)
 
-                        this.Invoke(new MethodInvoker(delegate
+                        this.Invoke(new System.Windows.Forms.MethodInvoker(delegate
                         {
                             dataGridView1.Sort(dataGridView1.SortedColumn, ListSortDirection.Descending);
                         }));
                     else
-                        this.Invoke(new MethodInvoker(delegate
+                        this.Invoke(new System.Windows.Forms.MethodInvoker(delegate
                         {
                             dataGridView1.Sort(dataGridView1.SortedColumn, ListSortDirection.Ascending);
                         }));
@@ -1231,7 +1231,7 @@ namespace BitcoinInfoMiner
 
                     // Set the Step property to a value of 1 to represent each file being copied.
                     if (InvokeRequired)
-                        this.Invoke(new MethodInvoker(delegate { progressBar1.Value = 1; }));
+                        this.Invoke(new System.Windows.Forms.MethodInvoker(delegate { progressBar1.Value = 1; }));
                     else
                         progressBar1.Value = 1;
                     Settings.stopSorting = true;
@@ -1415,15 +1415,19 @@ namespace BitcoinInfoMiner
             try
             {
                 int iter = 1;
-                jsonMinerStatus status = null;
+                jsonMinerStatus pools = null;
                 jsonMinerNetworkStatus netStatus = null;
-                while (status == null && iter < 3)
+                jsonMinerStatus minerAllStats = null;
+                jsonMinerStatus summaryStatus = null;
+                while (pools == null && iter < 3)
                 {
-                    status = await Kernel.getStatusData(ip);
+                    pools = await Kernel.getStatusData(ip);
                     netStatus = await Kernel.getNetworkData(ip);
+                    minerAllStats = await Kernel.getStatsData(ip);
+                    summaryStatus = await Kernel.getSummaryData(ip);
                     iter++;
                 }
-                MinerModel minerModel = new MinerModel(ip, status, netStatus);
+                MinerModel minerModel = new MinerModel(ip, pools, netStatus, minerAllStats, summaryStatus);
 
 
                 Sql.updateDB(minerModel);
@@ -1634,7 +1638,7 @@ namespace BitcoinInfoMiner
                 Settings.connectingToSocketsStatus = false;
                 monitoringTimer.Change(Timeout.Infinite, Timeout.Infinite);
                 if (InvokeRequired)
-                    this.Invoke(new MethodInvoker(delegate
+                    this.Invoke(new System.Windows.Forms.MethodInvoker(delegate
                     {
                         buttonMonitor.Text = "Start monitoring";
                     }));
@@ -1652,7 +1656,7 @@ namespace BitcoinInfoMiner
                 enableRebootButtons(false);
                 Settings.monitoringStatus = true;
                 if (InvokeRequired)
-                    this.Invoke(new MethodInvoker(delegate
+                    this.Invoke(new System.Windows.Forms.MethodInvoker(delegate
                     {
                         buttonMonitor.Text = "Stop monitoring";
                         progressBar1.Maximum = mainTable.Rows.Count;
@@ -1847,7 +1851,7 @@ namespace BitcoinInfoMiner
         public void enableConfigButtons(bool state)
         {
             if (InvokeRequired)
-                this.Invoke(new MethodInvoker(delegate
+                this.Invoke(new System.Windows.Forms.MethodInvoker(delegate
                 {
                     buttonConfigSelect.Enabled = state;
                     buttonConfigAll.Enabled = state;
@@ -1863,7 +1867,7 @@ namespace BitcoinInfoMiner
         public void enableMonitorButtons(bool state)
         {
             if (InvokeRequired)
-                this.Invoke(new MethodInvoker(delegate
+                this.Invoke(new System.Windows.Forms.MethodInvoker(delegate
                 {
 
                     buttonMonitor.Enabled = state;
@@ -1881,7 +1885,7 @@ namespace BitcoinInfoMiner
         public void enableRebootButtons(bool state)
         {
             if (InvokeRequired)
-                this.Invoke(new MethodInvoker(delegate
+                this.Invoke(new System.Windows.Forms.MethodInvoker(delegate
                 {
                     buttonRebootSelect.Enabled = state;
                     buttonRebootAll.Enabled = state;
@@ -2046,7 +2050,7 @@ namespace BitcoinInfoMiner
             {
                 Log.logDebug("Error with currentStatus " + Convert.ToString(ex));
             }
-            this.BeginInvoke(new MethodInvoker(delegate
+            this.BeginInvoke(new System.Windows.Forms.MethodInvoker(delegate
             {
                 Task.Run(() =>
                 {
@@ -2137,7 +2141,7 @@ namespace BitcoinInfoMiner
             {
                 monitoringTimer.Change(Timeout.Infinite, Timeout.Infinite);
                 if (InvokeRequired)
-                    this.Invoke(new MethodInvoker(delegate
+                    this.Invoke(new System.Windows.Forms.MethodInvoker(delegate
                     {
                         buttonMonitor.Text = "Start monitoring";
                     }));
@@ -2147,7 +2151,7 @@ namespace BitcoinInfoMiner
                 }
             }
 
-            this.Invoke(new MethodInvoker(delegate
+            this.Invoke(new System.Windows.Forms.MethodInvoker(delegate
             {
                 editedTable.Rows.Clear();
                 foreach (DataRow dr in mainTable.Rows)
@@ -2206,7 +2210,7 @@ namespace BitcoinInfoMiner
             {
                 monitoringTimer.Change(Timeout.Infinite, Timeout.Infinite);
                 if (InvokeRequired)
-                    this.Invoke(new MethodInvoker(delegate
+                    this.Invoke(new System.Windows.Forms.MethodInvoker(delegate
                     {
                         buttonMonitor.Text = "Start monitoring";
                     }));
@@ -2236,7 +2240,7 @@ namespace BitcoinInfoMiner
 
             // Set the Step property to a value of 1 to represent each file being copied.
             if (InvokeRequired)
-                this.Invoke(new MethodInvoker(delegate { progressBar1.Value = 1; }));
+                this.Invoke(new System.Windows.Forms.MethodInvoker(delegate { progressBar1.Value = 1; }));
             else
                 progressBar1.Value = 1;
             Settings.stopSorting = true;
@@ -2531,7 +2535,7 @@ namespace BitcoinInfoMiner
 
 
                 if (InvokeRequired)
-                    this.Invoke(new MethodInvoker(delegate
+                    this.Invoke(new System.Windows.Forms.MethodInvoker(delegate
                     {
                         labelWallet.Text = "";
                         labelDollar.Text = "";
@@ -2619,8 +2623,9 @@ namespace BitcoinInfoMiner
             Sql.loadMinerState(Sql.minersList);
         }
 
+        private void label2_Click(object sender, EventArgs e)
+        {
 
-
-
+        }
     }
 }
