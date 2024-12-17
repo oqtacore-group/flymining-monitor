@@ -1416,9 +1416,9 @@ namespace BitcoinInfoMiner
             {
                 int iter = 1;
                 var model = await AsicReaderManager.Instance().getAsicModel(ip);
-                jsonMinerStatus pools = null;
-                jsonMinerNetworkStatus netStatus = null;
-                jsonMinerStatuses minerAllStats = null;
+                dynamic pools = null;
+                dynamic netStatus = null;
+                dynamic minerAllStats = null;
                 jsonMinerStatus summaryStatus = null;
                 while (pools == null && iter < 3)
                 {
@@ -1428,8 +1428,7 @@ namespace BitcoinInfoMiner
                     summaryStatus = await AsicReaderManager.Instance().getSummaryData(ip, model);
                     iter++;
                 }
-                MinerModel minerModel = new MinerModel(ip, pools, netStatus, minerAllStats, summaryStatus);
-
+                MinerModel minerModel = new MinerModel(ip, pools, netStatus, minerAllStats, summaryStatus, model);
 
                 Sql.updateDB(minerModel);
                 return minerModel;

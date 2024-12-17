@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using System.Globalization;
+
 namespace BitcoinInfoMiner
 {
 
@@ -66,7 +67,7 @@ namespace BitcoinInfoMiner
         {
             return this.ip +"//// "+ this.status +"//// "+ this.pool1 +"//// "+ this.pool2 +"//// "+ this.pool3 +"//// "+ this.worker1 +"//// "+ this.worker2 +"//// "+ this.worker3 +"//// "+ this.Mac;
         }
-        public MinerModel()
+        public MinerModel(string ip)
         {
         }
         public MinerModel(DataGridViewRow row)
@@ -106,17 +107,23 @@ namespace BitcoinInfoMiner
             worker3 = Convert.ToString(row.Cells["Worker3"].Value);
             selected = row.Selected;
         }
-        public MinerModel(string ip,jsonMinerStatus minerPools,jsonMinerNetworkStatus networkStatus, jsonMinerStatuses minerAllStats, jsonMinerStatus summary)
+        public MinerModel(string ip, dynamic minerPools, dynamic networkStatus, dynamic minerAllStats, dynamic summary, string model)
         {
             this.ip=ip;
             try
             {
                 if (minerPools != null) //  && minerStatus.devs!=null && minerStatus.devs.Count > 0
                 {
-                    this.type = "Antminer";
                     try
                     {
-                        this.hashRateRT = minerAllStats.stats.Count > 0 ? decimal.Parse(minerAllStats.stats[0].rate_5s) : 0 ;
+                        if (model == "Antminer")
+                        {
+                            this.hashRateRT = minerAllStats.stats.Count > 0 ? decimal.Parse(minerAllStats.stats[0].rate_5s) : 0;
+                        }
+                        else
+                        {
+                            this.hashRateRT = decimal.Parse(minerAllStats.hash_5m);
+                        }
                     }
                     catch
                     {
@@ -124,7 +131,14 @@ namespace BitcoinInfoMiner
                     }
                     try
                     {
-                        this.hashRateAverage = minerAllStats.stats.Count > 0 ? decimal.Parse(minerAllStats.stats[0].rate_avg) : 0;
+                        if (model == "Antminer")
+                        {
+                            this.hashRateAverage = minerAllStats.stats.Count > 0 ? decimal.Parse(minerAllStats.stats[0].rate_avg) : 0;
+                        }
+                        else
+                        {
+                            this.hashRateAverage = decimal.Parse(minerAllStats.av);
+                        }
                     }
                     catch
                     {
@@ -134,9 +148,19 @@ namespace BitcoinInfoMiner
                     //this.temperatureString 
                     try
                     {
-                        this.temperature1 = minerAllStats.stats.Count > 0 ? Convert.ToInt32(minerAllStats.stats[0].chain[0].temp_chip.Last(), CultureInfo.InvariantCulture) : 0;
-                        this.temperature2 = minerAllStats.stats.Count > 0 ? Convert.ToInt32(minerAllStats.stats[0].chain[1].temp_chip.Last(), CultureInfo.InvariantCulture) : 0;
-                        this.temperature3 = minerAllStats.stats.Count > 0 ? Convert.ToInt32(minerAllStats.stats[0].chain[2].temp_chip.Last(), CultureInfo.InvariantCulture) : 0;
+                        if (model == "Antminer")
+                        {
+                            this.temperature1 = minerAllStats.stats.Count > 0 ? Convert.ToInt32(minerAllStats.stats[0].chain[0].temp_chip[minerAllStats.stats[0].chain[0].temp_chip.Count - 1], CultureInfo.InvariantCulture) : 0;
+                            this.temperature2 = minerAllStats.stats.Count > 0 ? Convert.ToInt32(minerAllStats.stats[0].chain[1].temp_chip[minerAllStats.stats[0].chain[1].temp_chip.Count - 1], CultureInfo.InvariantCulture) : 0;
+                            this.temperature3 = minerAllStats.stats.Count > 0 ? Convert.ToInt32(minerAllStats.stats[0].chain[2].temp_chip[minerAllStats.stats[0].chain[2].temp_chip.Count - 1], CultureInfo.InvariantCulture) : 0;
+                        }
+                        else
+                        {
+                            this.temperature1 = Convert.ToInt32(minerAllStats.MTavg1, CultureInfo.InvariantCulture);
+                            this.temperature2 = Convert.ToInt32(minerAllStats.MTavg2, CultureInfo.InvariantCulture);
+                            this.temperature3 = Convert.ToInt32(minerAllStats.MTavg3, CultureInfo.InvariantCulture);
+                        }
+             
                     }
                     catch
                     {
@@ -146,18 +170,29 @@ namespace BitcoinInfoMiner
                     }
                     try
                     {
-                        this.fanSpeed1 = minerAllStats.stats.Count > 0 && minerAllStats.stats[0].fan.Count > 0
+                        if (model == "Antminer")
+                        {
+                            this.fanSpeed1 = minerAllStats.stats.Count > 0 && minerAllStats.stats[0].fan.Count > 0
                             ? Convert.ToInt32(minerAllStats.stats[0].fan[0], CultureInfo.InvariantCulture)
                             : 0;
-                        this.fanSpeed2 = minerAllStats.stats.Count > 0 && minerAllStats.stats[0].fan.Count > 1
-                            ? Convert.ToInt32(minerAllStats.stats[0].fan[1], CultureInfo.InvariantCulture)
-                            : 0;
-                        this.fanSpeed3 = minerAllStats.stats.Count > 0 && minerAllStats.stats[0].fan.Count > 0
-                            ? Convert.ToInt32(minerAllStats.stats[0].fan[2], CultureInfo.InvariantCulture)
-                            : 0;
-                        this.fanSpeed4 = minerAllStats.stats.Count > 0 && minerAllStats.stats[0].fan.Count > 1
-                            ? Convert.ToInt32(minerAllStats.stats[0].fan[3], CultureInfo.InvariantCulture)
-                            : 0;
+                            this.fanSpeed2 = minerAllStats.stats.Count > 0 && minerAllStats.stats[0].fan.Count > 1
+                                ? Convert.ToInt32(minerAllStats.stats[0].fan[1], CultureInfo.InvariantCulture)
+                                : 0;
+                            this.fanSpeed3 = minerAllStats.stats.Count > 0 && minerAllStats.stats[0].fan.Count > 0
+                                ? Convert.ToInt32(minerAllStats.stats[0].fan[2], CultureInfo.InvariantCulture)
+                                : 0;
+                            this.fanSpeed4 = minerAllStats.stats.Count > 0 && minerAllStats.stats[0].fan.Count > 1
+                                ? Convert.ToInt32(minerAllStats.stats[0].fan[3], CultureInfo.InvariantCulture)
+                                : 0;
+                        }
+                        else
+                        {
+                            this.fanSpeed1 = Convert.ToInt32(minerAllStats.fan3, CultureInfo.InvariantCulture);
+                            this.fanSpeed2 = Convert.ToInt32(minerAllStats.fan3, CultureInfo.InvariantCulture);
+                            this.fanSpeed3 = Convert.ToInt32(minerAllStats.fan3, CultureInfo.InvariantCulture);
+                            this.fanSpeed4 = Convert.ToInt32(minerAllStats.fan4, CultureInfo.InvariantCulture);
+                        }
+                       
                     }
                     catch
                     {
@@ -169,14 +204,27 @@ namespace BitcoinInfoMiner
 
                     try
                     {
-                        this.type = minerPools.info.type;
-                        this.pool1 = minerPools.pools[0].url;
-                        this.pool2 = minerPools.pools[1].url;
-                        this.pool3 = minerPools.pools[2].url;
-                        this.worker1 = minerPools.pools[0].user;
-                        this.worker2 = minerPools.pools[1].user;
-                        this.worker3 = minerPools.pools[2].user;
-                        this.elapsed = TimeSpan.FromSeconds(Convert.ToInt64(summary.summary[0]["elapsed"])).ToString(@"dd\:hh\:mm\:ss");
+                        if(model == "Antminer")
+                        {
+                            this.type = minerPools.info.type;
+                            this.pool1 = minerPools.pools[0].url;
+                            this.pool2 = minerPools.pools[1].url;
+                            this.pool3 = minerPools.pools[2].url;
+                            this.worker1 = minerPools.pools[0].user;
+                            this.worker2 = minerPools.pools[1].user;
+                            this.worker3 = minerPools.pools[2].user;
+                            this.elapsed = TimeSpan.FromSeconds(Convert.ToInt64(summary.summary[0]["elapsed"])).ToString(@"dd\:hh\:mm\:ss");
+                        }
+                        else
+                        {
+                            this.type = networkStatus.hwtype;
+                            this.pool1 = minerPools.pool1;
+                            this.worker1 = minerPools.worker1;
+                            this.pool2 = minerPools.pool2;
+                            this.worker2 = minerPools.worker2;
+                            this.pool3 = minerPools.pool3;
+                            this.worker3 = minerPools.worker3;
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -233,6 +281,11 @@ namespace BitcoinInfoMiner
      
 
         }
+
+        public MinerModel()
+        {
+        }
+
         public void initEmpty()
         {
             
